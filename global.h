@@ -28,6 +28,8 @@
 #include <QCoreApplication>
 #include <QIcon>
 #include <QApplication>
+#include <QFile>
+#include <QDebug>
 
 enum plugin_types
 {

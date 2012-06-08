@@ -26,6 +26,7 @@
 #include <QSettings>
 #include <QDialog>
 #include "tabmanager.h"
+#include "aboutdialog.h"
 
 class MainWindow : public QMainWindow
 {

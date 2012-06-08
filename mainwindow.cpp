@@ -36,7 +36,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::about_dialog()
 {
-
+    aboutDialog aboutdlg(this);
+    aboutdlg.exec();
 }
 
 void MainWindow::create_menu()
@@ -51,6 +52,7 @@ void MainWindow::create_menu()
 
     menu=new QMenu(tr("help"),menubar);
     menu->addAction(tr("about"),this,SLOT(about_dialog()));
+    menubar->addMenu(menu);
 
     setMenuBar(menubar);
 }

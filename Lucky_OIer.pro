@@ -33,4 +33,8 @@ FORMS += \
     aboutdialog.ui
 
 RESOURCES += \
-    images.qrc
+    Lucky_OIer.qrc
+
+OTHER_FILES += \
+    version.txt \
+    gpl-3.0.html

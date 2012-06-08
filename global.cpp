@@ -27,9 +27,20 @@ global::global()
 
 void global::global_init(QApplication *p)
 {
+    QFile version(":/text/version.txt");
+
+    //version.setFileName(p->applicationDirPath()+"/version.txt");
+    //qDebug()<<p->applicationDirPath()+"/version.txt"<<version.fileName();
+    Q_ASSERT(version.open(QIODevice::ReadOnly|QIODevice::Text));
+    QCoreApplication::setApplicationVersion(QString(version.readAll()));
+    /*else
+    {
+        QCoreApplication::setApplicationVersion("unknow version");
+    }*/
+
+
     QCoreApplication::setOrganizationName("Lucky OIer Team");
     QCoreApplication::setApplicationName("Lucky OIer");
-    QCoreApplication::setApplicationVersion("1.0.0.0");
 
     p->setWindowIcon(QIcon(":/images/images/Logo.png"));
 
