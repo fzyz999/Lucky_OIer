@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>612</width>
-    <height>396</height>
+    <height>411</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>0</x>

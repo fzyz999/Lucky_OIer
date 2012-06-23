@@ -32,8 +32,19 @@ aboutDialog::aboutDialog(QWidget *parent) :
     file.setFileName(":/text/gpl-3.0.html");
     if(file.open(QIODevice::ReadOnly|QIODevice::Text))
         license=new QString(file.readAll());
+    file.close();
 
+    file.setFileName(":/text/readme.html");
+    if(file.open(QIODevice::ReadOnly|QIODevice::Text))
+        about=new QString(file.readAll());
+    file.close();
 
+    file.setFileName(":/text/authors.txt");
+    if(file.open(QIODevice::ReadOnly|QIODevice::Text))
+        authors=new QString(file.readAll());
+    file.close();
+
+    ui->textBrowser->setText(*about);
 }
 
 aboutDialog::~aboutDialog()
@@ -44,13 +55,13 @@ aboutDialog::~aboutDialog()
 //about button
 void aboutDialog::on_pushButton_4_clicked()
 {
-
+    ui->textBrowser->setHtml(*about);
 }
 
 //authors button
 void aboutDialog::on_pushButton_2_clicked()
 {
-
+    ui->textBrowser->setPlainText(*authors);
 }
 
 //license button

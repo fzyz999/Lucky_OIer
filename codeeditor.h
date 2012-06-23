@@ -20,11 +20,13 @@
 #ifndef CODEEDITOR_H
 #define CODEEDITOR_H
 
+#include <QWidget>
 #include <QString>
 #include <QFile>
 #include <Qsci/qsciscintilla.h>
 #include <Qsci/qscilexercpp.h>
 #include <Qsci/qscilexerpascal.h>
+#include "codeeditorconfiger.h"
 
 class codeEditor: public QsciScintilla
 {
@@ -32,6 +34,10 @@ public:
     codeEditor(QWidget *parent = 0);
     codeEditor(const QString &name, QWidget *parent=0);
     bool open(QString name);
+
+public slots:
+    void on_settings_changed(codeEditorSettings *ce_settings);
+
 };
 
 #endif // CODEEDITOR_H

@@ -5,5 +5,7 @@
     <qresource prefix="/text">
         <file>version.txt</file>
         <file>gpl-3.0.html</file>
+        <file>readme.html</file>
+        <file>authors.txt</file>
     </qresource>
 </RCC>

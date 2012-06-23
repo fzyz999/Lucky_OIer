@@ -27,22 +27,32 @@ global::global()
 
 void global::global_init(QApplication *p)
 {
+    QElapsedTimer t;
+
+    QSplashScreenPlus splash(":/images/images/Logo.png");
+
+    //loading version and setting basic infomations
+    t.start();
+    splash.showMessage("loading basic infomations",Qt::AlignRight,QColor(Qt::white));
+    qApp->processEvents();
+
     QFile version(":/text/version.txt");
 
-    //version.setFileName(p->applicationDirPath()+"/version.txt");
-    //qDebug()<<p->applicationDirPath()+"/version.txt"<<version.fileName();
     Q_ASSERT(version.open(QIODevice::ReadOnly|QIODevice::Text));
     QCoreApplication::setApplicationVersion(QString(version.readAll()));
-    /*else
-    {
-        QCoreApplication::setApplicationVersion("unknow version");
-    }*/
-
 
     QCoreApplication::setOrganizationName("Lucky OIer Team");
     QCoreApplication::setApplicationName("Lucky OIer");
 
     p->setWindowIcon(QIcon(":/images/images/Logo.png"));
+
+    while(t.elapsed()<1000)
+        qApp->processEvents();
+
+    //loading plugins
+    t.restart();
+    splash.showMessage("loading plugins",Qt::AlignRight,QColor(Qt::white));
+    qApp->processEvents();
 
     QSettings settings;
 
@@ -61,6 +71,23 @@ void global::global_init(QApplication *p)
             delete tmp.p_plder;
     }
     settings.endGroup();
+
+    while(t.elapsed()<1000)
+        qApp->processEvents();
+
+    //loading gui styles
+    t.restart();
+    splash.showMessage("loading gui styles",Qt::AlignRight,QColor(Qt::white));
+    qApp->processEvents();
+
+    settings.beginGroup("guiStyle");
+    p->setStyle(settings.value("styleName").toString());
+    settings.endGroup();
+
+    while(t.elapsed()<1000)
+        qApp->processEvents();
+
+    splash.close();
 }
 
 void global::global_exit()

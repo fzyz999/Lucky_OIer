@@ -30,6 +30,11 @@
 #include <QApplication>
 #include <QFile>
 #include <QDebug>
+#include <QElapsedTimer>
+#include <QColor>
+#include <QString>
+
+#include "qsplashscreenplus.h"
 
 enum plugin_types
 {

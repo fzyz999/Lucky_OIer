@@ -16,7 +16,8 @@ SOURCES += main.cpp\
     global.cpp \
     codeeditor.cpp \
     codeeditorconfiger.cpp \
-    aboutdialog.cpp
+    aboutdialog.cpp \
+    qsplashscreenplus.cpp
 
 HEADERS  += mainwindow.h \
     lop_plugins_interface.h \
@@ -24,7 +25,8 @@ HEADERS  += mainwindow.h \
     global.h \
     codeeditor.h \
     codeeditorconfiger.h \
-    aboutdialog.h
+    aboutdialog.h \
+    qsplashscreenplus.h
 
 unix|win32: LIBS += -lqscintilla2
 
@@ -37,4 +39,6 @@ RESOURCES += \
 
 OTHER_FILES += \
     version.txt \
-    gpl-3.0.html
+    gpl-3.0.html \
+    readme.html \
+    authors.txt
