@@ -23,9 +23,29 @@
 #include <QWidget>
 #include <QTabWidget>
 #include <QFile>
+#include <QFileInfo>
 #include <QFileDialog>
+#include <QErrorMessage>
 #include "global.h"
 #include "codeeditor.h"
+#include "configerbase.h"
+
+namespace Ui{
+class tabManagerConfiger;
+}
+
+class tabManagerConfiger : public configerBase
+{
+    Q_OBJECT
+
+public:
+    explicit tabManagerConfiger(QWidget *parent=0);
+    ~tabManagerConfiger();
+
+private:
+    Ui::tabManagerConfiger *ui;
+
+};
 
 class TabManager : public QTabWidget
 {
@@ -37,14 +57,20 @@ signals:
 
 public slots:
     void open_file();
-    /*void save();
+    void new_file();
+    void save();
     void save_all();
-    void text_changed();
+    //void text_changed();
     void redo();
-    void undo();*/
+    void undo();
+    void copy();
+    void cut();
+    void paste();
+    void select_all();
 
 private:
     int tab_count;
+    int new_file_count;
 };
 
 #endif // TABMANAGER_H

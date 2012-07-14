@@ -19,6 +19,20 @@
 
 #include "tabmanager.h"
 
+#include "ui_tabmanagerconfiger.h"
+
+tabManagerConfiger::tabManagerConfiger(QWidget *parent) :
+    configerBase(parent),
+    ui(new Ui::tabManagerConfiger)
+{
+    ui->setupUi(this);
+}
+
+tabManagerConfiger::~tabManagerConfiger()
+{
+    delete ui;
+}
+
 TabManager::TabManager(QWidget *parent) :
     QTabWidget(parent)
 {
@@ -26,7 +40,10 @@ TabManager::TabManager(QWidget *parent) :
     setDocumentMode(true);
     setMovable(true);
     setTabsClosable(true);
+    setElideMode(Qt::ElideRight);
+    setTabPosition(QTabWidget::East);
     tab_count=1;
+    new_file_count=1;
 }
 
 void TabManager::open_file()
@@ -35,6 +52,7 @@ void TabManager::open_file()
     QStringList file_name_list=QFileDialog::getOpenFileNames(this,tr("Open File"),settings.value("files/historyDir").toString());
     codeEditor *tmp;
     QString name;
+
     int i;
 
     if(!file_name_list.isEmpty())
@@ -54,13 +72,104 @@ void TabManager::open_file()
 
         tmp=new codeEditor(name,this);
 
-        for(i=name.size()-1;i>=0;i--)
-            if(name[i]=='/')
-                break;
-        name=name.right(name.size()-i-1);
+        name=QFileInfo(name).fileName();
 
         addTab(tmp,name);
 
         file_name_list.pop_front();
     }
+}
+
+void TabManager::new_file()
+{
+    codeEditor *tmp=new codeEditor(this);
+    if(tmp!=NULL)
+        addTab(tmp,tr("Unnamed")+QString::number(new_file_count++));
+    else
+    {
+        QErrorMessage error(this);
+        error.showMessage(tr("out of memmory!"));
+        error.exec();
+    }
+}
+
+void TabManager::save()
+{
+    codeEditor *current=qobject_cast<codeEditor*>(currentWidget());
+
+    if(Q_LIKELY(current!=NULL))
+        if(Q_UNLIKELY(!current->save()))
+        {
+            QErrorMessage error(this);
+            error.showMessage(tr("Saving file failed!"));
+            error.exec();
+        }
+}
+
+void TabManager::save_all()
+{
+    for(int i=count();i>0;i--)
+    {
+        codeEditor *editor=qobject_cast<codeEditor *>(widget(i-1));
+
+        if(Q_LIKELY(editor!=NULL))
+        {
+            if(Q_UNLIKELY(!editor->save()))
+            {
+                QErrorMessage error(this);
+                error.showMessage(tr("Saving file failed!"));
+                error.exec();
+            }
+        }
+
+
+    }
+}
+
+void TabManager::undo()
+{
+    codeEditor *current=qobject_cast<codeEditor *>(currentWidget());
+
+    if(Q_LIKELY(current!=NULL))
+        current->undo();
+}
+
+void TabManager::redo()
+{
+    codeEditor *current=qobject_cast<codeEditor *>(currentWidget());
+
+    if(Q_LIKELY(current!=NULL))
+        current->redo();
+}
+
+void TabManager::copy()
+{
+    codeEditor *current=qobject_cast<codeEditor *>(currentWidget());
+
+    if(Q_LIKELY(current!=NULL))
+        current->copy();
+}
+
+void TabManager::cut()
+{
+    codeEditor *current=qobject_cast<codeEditor *>(currentWidget());
+
+    if(Q_LIKELY(current!=NULL))
+        current->cut();
+}
+
+void TabManager::paste()
+{
+    codeEditor *current=qobject_cast<codeEditor *>(currentWidget());
+
+    if(Q_LIKELY(current!=NULL))
+        current->paste();
+}
+
+void TabManager::select_all()
+{
+    codeEditor *current=qobject_cast<codeEditor *>(currentWidget());
+
+    if(Q_LIKELY(current!=NULL))
+        current->selectAll();
 }

@@ -23,6 +23,10 @@
 #include <QWidget>
 #include <QString>
 #include <QFile>
+#include <QFileInfo>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QSettings>
 #include <Qsci/qsciscintilla.h>
 #include <Qsci/qscilexercpp.h>
 #include <Qsci/qscilexerpascal.h>
@@ -30,14 +34,19 @@
 
 class codeEditor: public QsciScintilla
 {
+    Q_OBJECT
+
 public:
     codeEditor(QWidget *parent = 0);
     codeEditor(const QString &name, QWidget *parent=0);
     bool open(QString name);
+    bool save();
+    void close();
 
-public slots:
-    void on_settings_changed(codeEditorSettings *ce_settings);
+private:
+    QString file_path;
 
+    void init();
 };
 
 #endif // CODEEDITOR_H

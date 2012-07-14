@@ -45,13 +45,31 @@ void MainWindow::create_menu()
     QMenuBar *menubar=new QMenuBar(this);
 
     QMenu *menu=new QMenu(tr("file"),menubar);
+    menu->addAction(tr("new"),p_tabmgr,SLOT(new_file()),QKeySequence(QKeySequence::New));
     menu->addAction(tr("open"),p_tabmgr,SLOT(open_file()),QKeySequence(QKeySequence::Open));
+    menu->addSeparator();
+    menu->addAction(tr("save"),p_tabmgr,SLOT(save()),QKeySequence(QKeySequence::Save));
+    menu->addAction(tr("save all"),p_tabmgr,SLOT(save_all()));
     menu->addSeparator();
     menu->addAction(tr("quit"),this,SLOT(close()),QKeySequence(QKeySequence::Quit));
     menubar->addMenu(menu);
 
+
+    menu=new QMenu(tr("edit"),menubar);
+    menu->addAction(tr("redo"),p_tabmgr,SLOT(redo()),QKeySequence(QKeySequence::Redo));
+    menu->addAction(tr("undo"),p_tabmgr,SLOT(undo()),QKeySequence(QKeySequence::Undo));
+    menu->addSeparator();
+    menu->addAction(tr("cut"),p_tabmgr,SLOT(cut()),QKeySequence(QKeySequence::Cut));
+    menu->addAction(tr("copy"),p_tabmgr,SLOT(copy()),QKeySequence(QKeySequence::Copy));
+    menu->addAction(tr("paste"),p_tabmgr,SLOT(paste()),QKeySequence(QKeySequence::Paste));
+    menu->addAction(tr("select all"),p_tabmgr,SLOT(paste()),QKeySequence(QKeySequence::SelectAll));
+    /* TODO: options menu
+    menu->addAction(tr("options"));*/
+    menubar->addMenu(menu);
+
     menu=new QMenu(tr("help"),menubar);
     menu->addAction(tr("about"),this,SLOT(about_dialog()));
+    menu->addAction(tr("about Qt"),this,SLOT(about_qt()));
     menubar->addMenu(menu);
 
     setMenuBar(menubar);
@@ -75,4 +93,9 @@ void MainWindow::write_settings()
     settings.setValue("geometry", saveGeometry());
     settings.setValue("windowState", saveState());
     settings.endGroup();
+}
+
+void MainWindow::about_qt()
+{
+    QMessageBox::aboutQt(this);
 }

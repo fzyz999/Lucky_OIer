@@ -25,6 +25,8 @@
 #include <QMenuBar>
 #include <QSettings>
 #include <QDialog>
+#include <QMessageBox>
+
 #include "tabmanager.h"
 #include "aboutdialog.h"
 
@@ -38,6 +40,7 @@ public:
 
 public slots:
     void about_dialog();
+    void about_qt();
 
 private:
     TabManager *p_tabmgr;

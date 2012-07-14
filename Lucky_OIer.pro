@@ -17,7 +17,8 @@ SOURCES += main.cpp\
     codeeditor.cpp \
     codeeditorconfiger.cpp \
     aboutdialog.cpp \
-    qsplashscreenplus.cpp
+    qsplashscreenplus.cpp \
+    configerbase.cpp
 
 HEADERS  += mainwindow.h \
     lop_plugins_interface.h \
@@ -26,13 +27,15 @@ HEADERS  += mainwindow.h \
     codeeditor.h \
     codeeditorconfiger.h \
     aboutdialog.h \
-    qsplashscreenplus.h
+    qsplashscreenplus.h \
+    configerbase.h
 
 unix|win32: LIBS += -lqscintilla2
 
 FORMS += \
     codeeditorconfiger.ui \
-    aboutdialog.ui
+    aboutdialog.ui \
+    tabmanagerconfiger.ui
 
 RESOURCES += \
     Lucky_OIer.qrc

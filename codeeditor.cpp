@@ -22,28 +22,39 @@
 codeEditor::codeEditor(QWidget *parent):
     QsciScintilla(parent)
 {
-    setAutoIndent(true);
-    setAutoCompletionFillupsEnabled(true);
+    init();
 }
 
 codeEditor::codeEditor(const QString &name, QWidget *parent):
     QsciScintilla(parent)
 {
+    init();
     open(name);
+}
+
+void codeEditor::init()
+{
+    setAutoIndent(true);
+    setAutoCompletionFillupsEnabled(true);
+
+    file_path.clear();
 }
 
 bool codeEditor::open(QString name)
 {
-    int i;
     QFile file;
+    QFileInfo fileInfo;
     file.setFileName(name);
+    fileInfo.setFile(file);
+
     if(file.open(QIODevice::ReadWrite|QIODevice::Text))
     {
-        read(&file);
-        for(i=name.size()-1;i>=0;i--)
-            if(name[i]=='.')
-                break;
-        name=name.right(name.size()-i-1);
+        if(!read(&file))
+            return false;
+
+        file_path=name;
+
+        name=fileInfo.suffix();
         if(name=="cpp"||name=="c")
             setLexer(new QsciLexerCPP);
         else if(name=="pas")
@@ -52,4 +63,74 @@ bool codeEditor::open(QString name)
     }
 
     return false;
+}
+
+bool codeEditor::save()
+{
+    QFile file;
+    if(file_path.isEmpty())
+    {
+        QSettings settings;
+        file.setFileName(QFileDialog::getSaveFileName(
+                             this,tr("Save File"),
+                             settings.value("files/historyDir").toString()));
+    }
+    else
+    {
+        file.setFileName(file_path);
+    }
+
+    if(file.open(QIODevice::ReadWrite|QIODevice::Text))
+    {
+        if(!write(&file))
+            return false;
+    }
+
+    return true;
+}
+
+void codeEditor::close()
+{
+    if(isModified())
+    {
+        QMessageBox msgbox(this);
+
+        msgbox.setText(tr("The document has been modified."));
+        msgbox.setInformativeText(tr("Do you want to save your changes?"));
+        msgbox.setDefaultButton(QMessageBox::Save);
+        msgbox.setStandardButtons(QMessageBox::Discard|QMessageBox::Cancel);
+
+        int ret=msgbox.exec();
+
+        switch (ret)
+        {
+        case QMessageBox::Save:
+            // Save was clicked
+            if(!save())
+            {
+                //Save file failed
+
+            }
+
+            break;
+        case QMessageBox::Discard:
+            // Don't Save was clicked
+
+
+            break;
+        case QMessageBox::Cancel:
+            // Cancel was clicked
+            return ;
+
+            break;
+        default:
+            // should never be reached
+            qWarning("codeeditor.cpp: switch(ret) reached an unexcepted code!");
+            break;
+        }
+    }
+
+
+
+    deleteLater();
 }
