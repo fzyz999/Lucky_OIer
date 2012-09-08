@@ -52,8 +52,6 @@ class TabManager : public QTabWidget
     Q_OBJECT
 public:
     explicit TabManager(QWidget *parent = 0);
-    
-signals:
 
 public slots:
     void open_file();
@@ -67,10 +65,15 @@ public slots:
     void cut();
     void paste();
     void select_all();
+    void on_tab_close_requested(int index);
+    void on_current_tab_change(int index);
 
 private:
     int tab_count;
     int new_file_count;
+    codeEditor *currentEditor;
+
+
 };
 
 #endif // TABMANAGER_H

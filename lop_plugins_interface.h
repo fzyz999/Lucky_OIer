@@ -19,16 +19,22 @@
 
 #ifndef LOP_PLUGINS_INTERFACE_H
 #define LOP_PLUGINS_INTERFACE_H
+/*
 
 #include <QWidget>
 #include <QPlainTextEdit>
 #include <QString>
 #include <QStringList>
+#include <QProcess>
 
-class PluginInterface
+class PluginInterface : public QObject
 {
+    Q_OBJECT
+
 public:
-    virtual QString get_version();
+    virtual QString get_version(){return QString("0.0");}
+    virtual QString name(){return QString("generic");}
+    virtual bool init(){return true;}
 };
 
 //lop_mode_interface declare//
@@ -50,7 +56,7 @@ struct compileError
     QString error;
     int line_num;
 };
-class lopCompilerInterface:public PluginInterface
+class lopCompilerInterface: public PluginInterface,QProcess
 {
 public:
     virtual bool compile(const QString *filename);
@@ -61,5 +67,5 @@ Q_DECLARE_INTERFACE(lopCompilerInterface,"Lucky.OIer/1.0")
 
 ////////////
 
-
+*/
 #endif // LOP_PLUGINS_INTERFACE_H

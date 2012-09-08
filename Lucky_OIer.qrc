@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/images">
         <file>images/Logo.png</file>
+        <file>images/Splash.png</file>
     </qresource>
     <qresource prefix="/text">
         <file>version.txt</file>

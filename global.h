@@ -29,21 +29,25 @@
 #include <QIcon>
 #include <QApplication>
 #include <QFile>
+#include <QFileInfo>
 #include <QDebug>
 #include <QElapsedTimer>
 #include <QColor>
 #include <QString>
+#include <QInputDialog>
 
+//#include "lop_plugins_interface.h"
 #include "qsplashscreenplus.h"
+#include "gcc.h"
 
-enum plugin_types
+/*enum plugin_types
 {
     text_mode,
     compiler,
     debuger,
     other,
     count
-};
+};*/
 
 struct pluginStruct
 {
@@ -51,16 +55,17 @@ struct pluginStruct
     QObject *p_plugin;
 };
 
-class global
+class global: public QObject
 {
+
 public:
-    static QList<pluginStruct>* get_plugins_list(plugin_types type);
+    //static QList<pluginStruct>* get_plugins_list(plugin_types type);
     static void global_init(QApplication *p);
     static void global_exit();
 
 private:
     global();
-    static QList<pluginStruct> plugins[count];
+    //static QList<pluginStruct> plugins[count];
 };
 
 #endif // GLOBAL_H

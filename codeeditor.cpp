@@ -23,6 +23,7 @@ codeEditor::codeEditor(QWidget *parent):
     QsciScintilla(parent)
 {
     init();
+    isFileNameChanged=false;
 }
 
 codeEditor::codeEditor(const QString &name, QWidget *parent):
@@ -30,19 +31,19 @@ codeEditor::codeEditor(const QString &name, QWidget *parent):
 {
     init();
     open(name);
+    isFileNameChanged=false;
 }
 
 void codeEditor::init()
 {
     setAutoIndent(true);
-    setAutoCompletionFillupsEnabled(true);
-
-    file_path.clear();
+    //setAutoCompletionFillupsEnabled(true);
+    //setAutoCompletionSource(AcsAll);
+    //setAutoCompletionThreshold(3);
 }
 
 bool codeEditor::open(QString name)
 {
-    QFile file;
     QFileInfo fileInfo;
     file.setFileName(name);
     fileInfo.setFile(file);
@@ -50,46 +51,71 @@ bool codeEditor::open(QString name)
     if(file.open(QIODevice::ReadWrite|QIODevice::Text))
     {
         if(!read(&file))
+        {
+            file.close();
+            file.setFileName("\0");
             return false;
+        }
 
-        file_path=name;
+        setModified(false);
 
         name=fileInfo.suffix();
         if(name=="cpp"||name=="c")
             setLexer(new QsciLexerCPP);
         else if(name=="pas")
             setLexer(new QsciLexerPascal);
+
+        file.close();
+
         return true;
     }
+
+    file.setFileName("\0");
 
     return false;
 }
 
 bool codeEditor::save()
 {
-    QFile file;
-    if(file_path.isEmpty())
+    if(file.fileName().isEmpty())
     {
         QSettings settings;
         file.setFileName(QFileDialog::getSaveFileName(
                              this,tr("Save File"),
                              settings.value("files/historyDir").toString()));
-    }
-    else
-    {
-        file.setFileName(file_path);
+
+        //if getSaveFileName() is canceled by user
+        if(file.fileName().isEmpty())
+        {
+            isFileNameChanged=false;
+            return true;
+        }
+        //return true because canceling by user isn't an error
+
+        isFileNameChanged=true;
+
+        QFileInfo fileInfo(file);
+        QString name=fileInfo.suffix();
+        if(name=="cpp"||name=="c")
+            setLexer(new QsciLexerCPP);
+        else if(name=="pas")
+            setLexer(new QsciLexerPascal);
     }
 
     if(file.open(QIODevice::ReadWrite|QIODevice::Text))
     {
         if(!write(&file))
+        {
+            file.close();
             return false;
+        }
     }
 
+    file.close();
     return true;
 }
 
-void codeEditor::close()
+bool codeEditor::close()
 {
     if(isModified())
     {
@@ -97,8 +123,8 @@ void codeEditor::close()
 
         msgbox.setText(tr("The document has been modified."));
         msgbox.setInformativeText(tr("Do you want to save your changes?"));
+        msgbox.setStandardButtons(QMessageBox::Save|QMessageBox::Discard|QMessageBox::Cancel);
         msgbox.setDefaultButton(QMessageBox::Save);
-        msgbox.setStandardButtons(QMessageBox::Discard|QMessageBox::Cancel);
 
         int ret=msgbox.exec();
 
@@ -109,28 +135,49 @@ void codeEditor::close()
             if(!save())
             {
                 //Save file failed
+                msgbox.setText(tr("Saving file failed!"));
+                msgbox.setInformativeText(tr("Please save it again"));
+                msgbox.setStandardButtons(QMessageBox::Ok);
+                msgbox.setDefaultButton(QMessageBox::Ok);
+                msgbox.setIcon(QMessageBox::Warning);
 
+                msgbox.exec();
+                return false;
             }
 
             break;
         case QMessageBox::Discard:
             // Don't Save was clicked
-
+            return true;
 
             break;
         case QMessageBox::Cancel:
             // Cancel was clicked
-            return ;
+            return false;
 
             break;
         default:
             // should never be reached
-            qWarning("codeeditor.cpp: switch(ret) reached an unexcepted code!");
+            qWarning("codeeditor.cpp: switch(ret) reached an unexcepted line!");
             break;
         }
     }
 
+    return true;
+}
 
+bool codeEditor::is_filename_changed()
+{
+    return isFileNameChanged;
+}
 
-    deleteLater();
+QString codeEditor::get_file_name()
+{
+    QFileInfo fileInfo(file);
+    return fileInfo.fileName();
+}
+
+void codeEditor::set_filename_changed(const bool &bl)
+{
+    isFileNameChanged=bl;
 }

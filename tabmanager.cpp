@@ -37,13 +37,19 @@ TabManager::TabManager(QWidget *parent) :
     QTabWidget(parent)
 {
     clear();
+
+    connect(this,SIGNAL(tabCloseRequested(int)),this,SLOT(on_tab_close_requested(int)));
+    connect(this,SIGNAL(currentChanged(int)),this,SLOT(on_current_tab_change(int)));
+
     setDocumentMode(true);
     setMovable(true);
     setTabsClosable(true);
     setElideMode(Qt::ElideRight);
-    setTabPosition(QTabWidget::East);
+    setTabPosition(QTabWidget::North);
     tab_count=1;
     new_file_count=1;
+    currentEditor=NULL;
+
 }
 
 void TabManager::open_file()
@@ -84,7 +90,7 @@ void TabManager::new_file()
 {
     codeEditor *tmp=new codeEditor(this);
     if(tmp!=NULL)
-        addTab(tmp,tr("Unnamed")+QString::number(new_file_count++));
+        addTab(tmp,tr("Untitled")+QString::number(new_file_count++));
     else
     {
         QErrorMessage error(this);
@@ -95,14 +101,18 @@ void TabManager::new_file()
 
 void TabManager::save()
 {
-    codeEditor *current=qobject_cast<codeEditor*>(currentWidget());
-
-    if(Q_LIKELY(current!=NULL))
-        if(Q_UNLIKELY(!current->save()))
+    if(Q_LIKELY(currentEditor!=NULL))
+        if(Q_UNLIKELY(!currentEditor->save()))
         {
             QErrorMessage error(this);
             error.showMessage(tr("Saving file failed!"));
             error.exec();
+        }
+        else if(currentEditor->is_filename_changed())
+        {
+            qDebug()<<currentEditor->get_file_name();
+            setTabText(currentIndex(),currentEditor->get_file_name());
+            currentEditor->set_filename_changed(false);
         }
 }
 
@@ -120,56 +130,62 @@ void TabManager::save_all()
                 error.showMessage(tr("Saving file failed!"));
                 error.exec();
             }
+            else if(editor->is_filename_changed())
+            {
+                setTabText(i-1,editor->get_file_name());
+            }
         }
-
-
     }
 }
 
 void TabManager::undo()
 {
-    codeEditor *current=qobject_cast<codeEditor *>(currentWidget());
-
-    if(Q_LIKELY(current!=NULL))
-        current->undo();
+    if(Q_LIKELY(currentEditor!=NULL))
+        currentEditor->undo();
 }
 
 void TabManager::redo()
 {
-    codeEditor *current=qobject_cast<codeEditor *>(currentWidget());
-
-    if(Q_LIKELY(current!=NULL))
-        current->redo();
+    if(Q_LIKELY(currentEditor!=NULL))
+        currentEditor->redo();
 }
 
 void TabManager::copy()
 {
-    codeEditor *current=qobject_cast<codeEditor *>(currentWidget());
-
-    if(Q_LIKELY(current!=NULL))
-        current->copy();
+    if(Q_LIKELY(currentEditor!=NULL))
+        currentEditor->copy();
 }
 
 void TabManager::cut()
 {
-    codeEditor *current=qobject_cast<codeEditor *>(currentWidget());
-
-    if(Q_LIKELY(current!=NULL))
-        current->cut();
+    if(Q_LIKELY(currentEditor!=NULL))
+        currentEditor->cut();
 }
 
 void TabManager::paste()
 {
-    codeEditor *current=qobject_cast<codeEditor *>(currentWidget());
-
-    if(Q_LIKELY(current!=NULL))
-        current->paste();
+    if(Q_LIKELY(currentEditor!=NULL))
+        currentEditor->paste();
 }
 
 void TabManager::select_all()
 {
-    codeEditor *current=qobject_cast<codeEditor *>(currentWidget());
+    if(Q_LIKELY(currentEditor!=NULL))
+        currentEditor->selectAll();
+}
 
-    if(Q_LIKELY(current!=NULL))
-        current->selectAll();
+void TabManager::on_tab_close_requested(int index)
+{
+    codeEditor *tab=qobject_cast<codeEditor *>(widget(index));
+
+    if(tab->close())
+    {
+            removeTab(index);
+            tab->deleteLater();
+    }
+}
+
+void TabManager::on_current_tab_change(int index)
+{
+    currentEditor=qobject_cast<codeEditor *>(widget(index));
 }

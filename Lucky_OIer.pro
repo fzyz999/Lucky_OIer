@@ -18,7 +18,8 @@ SOURCES += main.cpp\
     codeeditorconfiger.cpp \
     aboutdialog.cpp \
     qsplashscreenplus.cpp \
-    configerbase.cpp
+    configerbase.cpp \
+    gcc.cpp
 
 HEADERS  += mainwindow.h \
     lop_plugins_interface.h \
@@ -28,7 +29,9 @@ HEADERS  += mainwindow.h \
     codeeditorconfiger.h \
     aboutdialog.h \
     qsplashscreenplus.h \
-    configerbase.h
+    configerbase.h \
+    compilerbase.h \
+    gcc.h
 
 unix|win32: LIBS += -lqscintilla2
 

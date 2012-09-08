@@ -41,10 +41,14 @@ public:
     codeEditor(const QString &name, QWidget *parent=0);
     bool open(QString name);
     bool save();
-    void close();
+    bool close();
+    bool is_filename_changed();
+    void set_filename_changed(const bool &bl);
+    QString get_file_name();
 
 private:
-    QString file_path;
+    QFile file;
+    bool isFileNameChanged;
 
     void init();
 };

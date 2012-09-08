@@ -19,7 +19,7 @@
 
 #include "global.h"
 
-QList<pluginStruct> global::plugins[count];
+//QList<pluginStruct> global::plugins[count];
 
 global::global()
 {
@@ -29,7 +29,7 @@ void global::global_init(QApplication *p)
 {
     QElapsedTimer t;
 
-    QSplashScreenPlus splash(":/images/images/Logo.png");
+    QSplashScreenPlus splash(":/images/images/Splash.png");
 
     //loading version and setting basic infomations
     t.start();
@@ -49,12 +49,35 @@ void global::global_init(QApplication *p)
     while(t.elapsed()<1000)
         qApp->processEvents();
 
-    //loading plugins
+    QSettings settings;
+
+    //loading compiler
+    t.restart();
+    splash.showMessage("finding compiler",Qt::AlignRight,QColor(Qt::white));
+    qApp->processEvents();
+
+    settings.beginGroup("compiler");
+#ifdef Q_OS_WIN32
+    QFileInfo file_info(settings.value("gcc/path","C:/MinGW/bin/gcc").toString());
+#else
+    QFileInfo file_info(settings.value("gcc/path","/usr/bin/gcc").toString());
+#endif
+    while(!file_info.exists())
+    {
+        file_info.setFile(QInputDialog::getText(0,tr("compiler path"),tr("please input the path of gcc")));
+    }
+
+    GCC::init(file_info.filePath(),settings.value("gcc/args").toStringList());
+
+    settings.endGroup();
+
+    while(t.elapsed()<1000)
+        qApp->processEvents();
+
+    /*loading plugins
     t.restart();
     splash.showMessage("loading plugins",Qt::AlignRight,QColor(Qt::white));
     qApp->processEvents();
-
-    QSettings settings;
 
     settings.beginGroup("plugins");
     QStringList plugins_name(settings.value("list_of_name").toStringList());
@@ -65,6 +88,7 @@ void global::global_init(QApplication *p)
         if(tmp.p_plder->load())
         {
             tmp.p_plugin=tmp.p_plder->instance();
+            qobject_cast<PluginInterface*> (tmp.p_plugin)->init();
             plugins[settings.value(*i+"/type").toInt()].push_back(tmp);
         }
         else
@@ -73,7 +97,7 @@ void global::global_init(QApplication *p)
     settings.endGroup();
 
     while(t.elapsed()<1000)
-        qApp->processEvents();
+        qApp->processEvents();*/
 
     //loading gui styles
     t.restart();
@@ -92,17 +116,17 @@ void global::global_init(QApplication *p)
 
 void global::global_exit()
 {
-    for(int i=0;i<count;i++)
+    /*for(int i=0;i<count;i++)
     {
         for(QList<pluginStruct>::iterator it=plugins[i].begin();it!=plugins[i].end();it++)
         {
             it->p_plder->unload();
             delete it->p_plder;
         }
-    }
+    }*/
 }
 
-QList<pluginStruct>* global::get_plugins_list(plugin_types type)
+/*QList<pluginStruct>* global::get_plugins_list(plugin_types type)
 {
     return &plugins[type];
-}
+}*/
